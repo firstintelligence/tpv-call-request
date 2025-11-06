@@ -36,6 +36,7 @@ serve(async (req) => {
 
     // Prepare the VAPI call request with all form fields as dynamic variables
     const vapiCallRequest: any = {
+      phoneNumberId: '0c8cdec4-c0fe-46e8-b89a-7741d0c49a00', // VAPI phone number to call from
       customer: {
         number: formattedPhone, // Customer's phone number with country code
       },
@@ -67,10 +68,6 @@ serve(async (req) => {
         address: formData.address,
       },
     };
-
-    // Add phoneNumberId if you have one configured in VAPI
-    // Uncomment and set your VAPI phone number ID:
-    // vapiCallRequest.phoneNumberId = 'your-vapi-phone-number-id';
 
     console.log('Initiating VAPI call with data:', JSON.stringify(vapiCallRequest, null, 2));
 
