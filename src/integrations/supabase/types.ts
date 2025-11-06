@@ -14,7 +14,78 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      tpv_requests: {
+        Row: {
+          agent_id: string
+          amortization: string | null
+          call_duration_seconds: number | null
+          city: string | null
+          created_at: string | null
+          customer_address: string
+          customer_name: string
+          customer_phone: string
+          email: string | null
+          ended_reason: string | null
+          id: string
+          interest_rate: string | null
+          monthly_payment: string | null
+          postal_code: string | null
+          products: string | null
+          promotional_term: string | null
+          province: string | null
+          sales_price: string | null
+          status: string
+          updated_at: string | null
+          vapi_call_id: string | null
+        }
+        Insert: {
+          agent_id: string
+          amortization?: string | null
+          call_duration_seconds?: number | null
+          city?: string | null
+          created_at?: string | null
+          customer_address: string
+          customer_name: string
+          customer_phone: string
+          email?: string | null
+          ended_reason?: string | null
+          id?: string
+          interest_rate?: string | null
+          monthly_payment?: string | null
+          postal_code?: string | null
+          products?: string | null
+          promotional_term?: string | null
+          province?: string | null
+          sales_price?: string | null
+          status?: string
+          updated_at?: string | null
+          vapi_call_id?: string | null
+        }
+        Update: {
+          agent_id?: string
+          amortization?: string | null
+          call_duration_seconds?: number | null
+          city?: string | null
+          created_at?: string | null
+          customer_address?: string
+          customer_name?: string
+          customer_phone?: string
+          email?: string | null
+          ended_reason?: string | null
+          id?: string
+          interest_rate?: string | null
+          monthly_payment?: string | null
+          postal_code?: string | null
+          products?: string | null
+          promotional_term?: string | null
+          province?: string | null
+          sales_price?: string | null
+          status?: string
+          updated_at?: string | null
+          vapi_call_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
