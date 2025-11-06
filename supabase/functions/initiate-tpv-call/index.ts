@@ -68,6 +68,7 @@ serve(async (req) => {
       metadata: {
         agentId: formData.agentId,
         customerName: formData.customerName,
+        address: formData.address,
       },
     };
 

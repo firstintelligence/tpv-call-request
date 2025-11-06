@@ -32,19 +32,21 @@ serve(async (req) => {
       const agentId = webhookData.call?.metadata?.agentId;
       const callStatus = webhookData.endedReason || 'unknown';
       const customerName = webhookData.call?.metadata?.customerName || 'Unknown';
+      const address = webhookData.call?.metadata?.address || 'Unknown';
       const callSuccessful = callStatus === 'assistant-ended-call' || callStatus === 'completed';
 
       console.log('Call ended:', {
         agentId,
         callStatus,
         customerName,
+        address,
         callSuccessful
       });
 
       if (agentId && AGENT_MAPPING[agentId]) {
         const agentPhone = AGENT_MAPPING[agentId];
-        const statusText = callSuccessful ? '✅ SUCCESSFUL' : '❌ FAILED';
-        const message = `TPV Call ${statusText}\n\nCustomer: ${customerName}\nAgent ID: ${agentId}\nStatus: ${callStatus}\n\nCall ID: ${webhookData.call?.id || 'N/A'}`;
+        const statusText = callSuccessful ? 'TPV Completed' : 'TPV Failed';
+        const message = `${statusText}\n\nCustomer: ${customerName}\nAddress: ${address}`;
 
         console.log('Sending SMS to agent:', agentPhone);
 
