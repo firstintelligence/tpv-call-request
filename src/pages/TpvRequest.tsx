@@ -169,6 +169,41 @@ const TpvRequest = () => {
     "Marathon Electric",
   ];
 
+  const canadianProvinces = [
+    "Alberta",
+    "British Columbia",
+    "Manitoba",
+    "New Brunswick",
+    "Newfoundland and Labrador",
+    "Northwest Territories",
+    "Nova Scotia",
+    "Nunavut",
+    "Ontario",
+    "Prince Edward Island",
+    "Quebec",
+    "Saskatchewan",
+    "Yukon",
+  ];
+
+  const hvacProducts = [
+    "Heat Pump",
+    "Tankless Water Heater",
+    "High-Efficiency Furnace",
+    "Air Conditioner",
+    "Boiler",
+    "Ductless Mini-Split",
+    "Heat Recovery Ventilator (HRV)",
+    "Energy Recovery Ventilator (ERV)",
+    "Smart Thermostat",
+    "Air Purification System",
+    "Humidifier/Dehumidifier",
+    "Geothermal Heat Pump",
+    "Solar Water Heater",
+    "Insulation",
+    "Windows and Doors",
+    "Programmable Thermostat",
+  ];
+
   const financeCompanies = [
     "Financeit Canada Inc.",
     "UEI Financial",
@@ -203,7 +238,7 @@ const TpvRequest = () => {
                     name="companyName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Company Name *</FormLabel>
+                        <FormLabel>Company Name</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger>
@@ -228,7 +263,7 @@ const TpvRequest = () => {
                     name="customerName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Customer Name *</FormLabel>
+                        <FormLabel>Customer Name</FormLabel>
                         <FormControl>
                           <Input placeholder="Enter customer name" {...field} />
                         </FormControl>
@@ -243,7 +278,7 @@ const TpvRequest = () => {
                   name="address"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Address *</FormLabel>
+                      <FormLabel>Address</FormLabel>
                       <FormControl>
                         <Input placeholder="Enter address" {...field} />
                       </FormControl>
@@ -258,7 +293,7 @@ const TpvRequest = () => {
                     name="city"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>City *</FormLabel>
+                        <FormLabel>City</FormLabel>
                         <FormControl>
                           <Input placeholder="Enter city" {...field} />
                         </FormControl>
@@ -272,10 +307,21 @@ const TpvRequest = () => {
                     name="province"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Province *</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter province" {...field} />
-                        </FormControl>
+                        <FormLabel>Province</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select province" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {canadianProvinces.map((province) => (
+                              <SelectItem key={province} value={province}>
+                                {province}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -286,7 +332,7 @@ const TpvRequest = () => {
                     name="postalCode"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Postal Code *</FormLabel>
+                        <FormLabel>Postal Code</FormLabel>
                         <FormControl>
                           <Input placeholder="Enter postal code" {...field} />
                         </FormControl>
@@ -302,7 +348,7 @@ const TpvRequest = () => {
                     name="phoneNumber"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Phone Number *</FormLabel>
+                        <FormLabel>Phone Number</FormLabel>
                         <FormControl>
                           <Input placeholder="Enter phone number" {...field} />
                         </FormControl>
@@ -318,7 +364,7 @@ const TpvRequest = () => {
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter email (optional)" {...field} />
+                          <Input placeholder="Enter email" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -331,14 +377,21 @@ const TpvRequest = () => {
                   name="products"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Products *</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="List products (itemized)"
-                          className="min-h-[100px]"
-                          {...field}
-                        />
-                      </FormControl>
+                      <FormLabel>Products</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select product" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {hvacProducts.map((product) => (
+                            <SelectItem key={product} value={product}>
+                              {product}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -350,7 +403,7 @@ const TpvRequest = () => {
                     name="salesPrice"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Sales Price (including taxes) *</FormLabel>
+                        <FormLabel>Sales Price (including taxes)</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
@@ -369,7 +422,7 @@ const TpvRequest = () => {
                     name="paymentOption"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Payment Option *</FormLabel>
+                        <FormLabel>Payment Option</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger>
