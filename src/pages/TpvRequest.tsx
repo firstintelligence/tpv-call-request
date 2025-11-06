@@ -199,9 +199,15 @@ const TpvRequest = () => {
     "Humidifier/Dehumidifier",
     "Geothermal Heat Pump",
     "Solar Water Heater",
+    "Hybrid Water Heater",
     "Insulation",
     "Windows and Doors",
     "Programmable Thermostat",
+    "Carbon Filter",
+    "Water Softener",
+    "HEPA Filter",
+    "UV Air Filter",
+    "UV Water Filter",
   ];
 
   const financeCompanies = [
