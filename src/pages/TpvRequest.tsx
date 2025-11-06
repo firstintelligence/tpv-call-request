@@ -134,7 +134,7 @@ const TpvRequest = () => {
       const { data: callResult, error } = await supabase.functions.invoke('initiate-tpv-call', {
         body: {
           ...data,
-          assistantId: 'YOUR_VAPI_ASSISTANT_ID', // Replace with your actual VAPI assistant ID
+          assistantId: '33a8b0b6-2fc0-4f1f-9f01-02712d52a676',
           phoneNumberId: null, // Optional: add your VAPI phone number ID
         },
       });
