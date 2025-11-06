@@ -37,9 +37,7 @@ serve(async (req) => {
     // Prepare the VAPI call request with all form fields as dynamic variables
     const vapiCallRequest = {
       phoneNumberId: formData.phoneNumberId || null, // Optional: use VAPI phone number ID
-      customer: {
-        number: formattedPhone, // Use formatted phone with country code
-      },
+      phoneNumber: formattedPhone, // Customer's phone number with country code
       assistantId: formData.assistantId, // The VAPI assistant/agent ID
       assistantOverrides: {
         variableValues: {
