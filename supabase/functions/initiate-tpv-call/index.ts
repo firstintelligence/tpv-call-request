@@ -43,7 +43,9 @@ serve(async (req) => {
           postalCode: formData.postalCode,
           phoneNumber: formData.phoneNumber,
           email: formData.email || '',
-          products: formData.products,
+          products: Array.isArray(formData.products) 
+            ? formData.products.join(', ') 
+            : formData.products,
           salesPrice: formData.salesPrice,
           paymentOption: formData.paymentOption,
           financeCompany: formData.financeCompany || '',

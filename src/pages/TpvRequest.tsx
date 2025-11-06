@@ -34,7 +34,7 @@ const formSchema = z.object({
   postalCode: z.string().min(1, "Postal code is required"),
   phoneNumber: z.string().min(10, "Valid phone number is required"),
   email: z.string().email("Valid email is required").optional().or(z.literal("")),
-  products: z.string().min(1, "Products are required"),
+  products: z.array(z.string()).min(1, "At least one product is required"),
   salesPrice: z.string().min(1, "Sales price is required"),
   paymentOption: z.string().min(1, "Payment option is required"),
   financeCompany: z.string().optional(),
@@ -61,7 +61,7 @@ const TpvRequest = () => {
       postalCode: "",
       phoneNumber: "",
       email: "",
-      products: "",
+      products: [],
       salesPrice: "",
       paymentOption: "",
       financeCompany: "",
@@ -194,7 +194,6 @@ const TpvRequest = () => {
     "Boiler",
     "Ductless Mini-Split",
     "Heat Recovery Ventilator (HRV)",
-    "Energy Recovery Ventilator (ERV)",
     "Smart Thermostat",
     "Air Purification System",
     "Humidifier/Dehumidifier",
@@ -392,20 +391,52 @@ const TpvRequest = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Products</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select product" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {hvacProducts.map((product) => (
-                            <SelectItem key={product} value={product}>
-                              {product}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <div className="space-y-2">
+                        <Select
+                          onValueChange={(value) => {
+                            const currentProducts = field.value || [];
+                            if (!currentProducts.includes(value)) {
+                              field.onChange([...currentProducts, value]);
+                            }
+                          }}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select products" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {hvacProducts.map((product) => (
+                              <SelectItem key={product} value={product}>
+                                {product}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {field.value && field.value.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {field.value.map((product) => (
+                              <div
+                                key={product}
+                                className="flex items-center gap-2 bg-secondary text-secondary-foreground px-3 py-1 rounded-md"
+                              >
+                                <span className="text-sm">{product}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    field.onChange(
+                                      field.value.filter((p) => p !== product)
+                                    );
+                                  }}
+                                  className="text-muted-foreground hover:text-foreground"
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
