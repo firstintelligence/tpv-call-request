@@ -20,11 +20,16 @@ serve(async (req) => {
     const formData = await req.json();
     console.log('Received TPV request:', formData);
 
+    // Format phone number for VAPI (add +1 country code and remove formatting)
+    const cleanPhone = formData.phoneNumber.replace(/\D/g, ''); // Remove all non-digits
+    const formattedPhone = `+1${cleanPhone}`; // Add country code
+    console.log('Formatted phone for VAPI:', formattedPhone);
+
     // Prepare the VAPI call request with all form fields as dynamic variables
     const vapiCallRequest = {
       phoneNumberId: formData.phoneNumberId || null, // Optional: use VAPI phone number ID
       customer: {
-        number: formData.phoneNumber,
+        number: formattedPhone, // Use formatted phone with country code
       },
       assistantId: formData.assistantId, // The VAPI assistant/agent ID
       assistantOverrides: {

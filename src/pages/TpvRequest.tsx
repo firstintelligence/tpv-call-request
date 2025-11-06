@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import InputMask from "react-input-mask";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -350,7 +351,20 @@ const TpvRequest = () => {
                       <FormItem>
                         <FormLabel>Phone Number</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter phone number" {...field} />
+                          <InputMask
+                            mask="(999) 999-9999"
+                            value={field.value}
+                            onChange={field.onChange}
+                            onBlur={field.onBlur}
+                          >
+                            {(inputProps: any) => (
+                              <Input
+                                {...inputProps}
+                                type="tel"
+                                placeholder="(416) 500-5000"
+                              />
+                            )}
+                          </InputMask>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
