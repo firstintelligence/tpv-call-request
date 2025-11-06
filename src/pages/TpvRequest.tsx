@@ -27,7 +27,6 @@ import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   agentId: z.string().min(1, "Agent ID is required"),
-  companyName: z.string().min(1, "Company name is required"),
   customerName: z.string().min(1, "Customer name is required"),
   address: z.string().min(1, "Address is required"),
   city: z.string().min(1, "City is required"),
@@ -37,8 +36,6 @@ const formSchema = z.object({
   email: z.string().email("Valid email is required").optional().or(z.literal("")),
   products: z.array(z.string()).min(1, "At least one product is required"),
   salesPrice: z.string().min(1, "Sales price is required"),
-  paymentOption: z.string().min(1, "Payment option is required"),
-  financeCompany: z.string().optional(),
   interestRate: z.string().optional(),
   promotionalTerm: z.string().optional(),
   amortization: z.string().optional(),
@@ -49,13 +46,11 @@ type FormValues = z.infer<typeof formSchema>;
 
 const TpvRequest = () => {
   const { toast } = useToast();
-  const [showFinanceFields, setShowFinanceFields] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       agentId: "",
-      companyName: "",
       customerName: "",
       address: "",
       city: "",
@@ -65,8 +60,6 @@ const TpvRequest = () => {
       email: "",
       products: [],
       salesPrice: "",
-      paymentOption: "",
-      financeCompany: "",
       interestRate: "",
       promotionalTerm: "",
       amortization: "",
@@ -74,31 +67,12 @@ const TpvRequest = () => {
     },
   });
 
-  const paymentOption = form.watch("paymentOption");
   const salesPrice = form.watch("salesPrice");
-  const financeCompany = form.watch("financeCompany");
   const interestRate = form.watch("interestRate");
   const amortization = form.watch("amortization");
 
   useEffect(() => {
-    setShowFinanceFields(paymentOption === "finance");
-    if (paymentOption !== "finance") {
-      form.setValue("financeCompany", "");
-      form.setValue("interestRate", "");
-      form.setValue("promotionalTerm", "");
-      form.setValue("amortization", "");
-      form.setValue("monthlyPayment", "");
-    }
-  }, [paymentOption, form]);
-
-  useEffect(() => {
-    if (
-      showFinanceFields &&
-      financeCompany === "Financeit Canada Inc." &&
-      salesPrice &&
-      interestRate &&
-      amortization
-    ) {
+    if (salesPrice && interestRate && amortization) {
       const price = parseFloat(salesPrice);
       const rate = parseFloat(interestRate) / 100;
       const months = parseInt(amortization);
@@ -122,7 +96,7 @@ const TpvRequest = () => {
         form.setValue("monthlyPayment", monthly.toFixed(2));
       }
     }
-  }, [salesPrice, financeCompany, interestRate, amortization, showFinanceFields, form]);
+  }, [salesPrice, interestRate, amortization, form]);
 
   const onSubmit = async (data: FormValues) => {
     console.log("TPV Request Data:", data);
@@ -138,7 +112,6 @@ const TpvRequest = () => {
         body: {
           ...data,
           assistantId: '33a8b0b6-2fc0-4f1f-9f01-02712d52a676',
-          phoneNumberId: null, // Optional: add your VAPI phone number ID
         },
       });
 
@@ -164,13 +137,6 @@ const TpvRequest = () => {
       });
     }
   };
-
-  const companies = [
-    "George's Plumbing and Heating",
-    "Edison Energy",
-    "Crown Construction",
-    "Marathon Electric",
-  ];
 
   const canadianProvinces = [
     "Alberta",
@@ -212,12 +178,6 @@ const TpvRequest = () => {
     "UV Water Filter",
   ];
 
-  const financeCompanies = [
-    "Financeit Canada Inc.",
-    "UEI Financial",
-    "iFinance",
-  ];
-
   const interestRates = [
     "0", "2.99", "3.99", "4.99", "5.99", "6.99", "7.99", "8.99", 
     "9.99", "10.99", "11.99", "12.99", "13.99", "14.99", "15.99", "16.99"
@@ -254,46 +214,19 @@ const TpvRequest = () => {
                   )}
                 />
 
-                <div className="grid gap-4 md:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name="companyName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Company Name</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select company" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {companies.map((company) => (
-                              <SelectItem key={company} value={company}>
-                                {company}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="customerName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Customer Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter customer name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="customerName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Customer Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter customer name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <FormField
                   control={form.control}
@@ -483,59 +416,10 @@ const TpvRequest = () => {
                       </FormItem>
                     )}
                   />
-
-                  <FormField
-                    control={form.control}
-                    name="paymentOption"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Payment Option</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select payment option" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="cash">Cash</SelectItem>
-                            <SelectItem value="cheque">Cheque</SelectItem>
-                            <SelectItem value="finance">Finance</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                 </div>
 
-                {showFinanceFields && (
-                  <div className="space-y-4 rounded-lg border border-border bg-muted/50 p-4">
-                    <h3 className="font-semibold text-lg">Finance Details</h3>
-
-                    <FormField
-                      control={form.control}
-                      name="financeCompany"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Finance Company</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select finance company" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {financeCompanies.map((company) => (
-                                <SelectItem key={company} value={company}>
-                                  {company}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                <div className="space-y-4 rounded-lg border border-border bg-muted/50 p-4">
+                  <h3 className="font-semibold text-lg">Finance Details</h3>
 
                     <div className="grid gap-4 md:grid-cols-2">
                       <FormField
@@ -635,7 +519,6 @@ const TpvRequest = () => {
                       />
                     </div>
                   </div>
-                )}
 
                 <Button type="submit" className="w-full" size="lg">
                   Submit TPV Request

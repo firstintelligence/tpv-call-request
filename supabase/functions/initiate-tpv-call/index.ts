@@ -44,7 +44,6 @@ serve(async (req) => {
         variableValues: {
           // Map all form fields to variables the agent can use
           agentId: formData.agentId,
-          companyName: formData.companyName,
           customerName: formData.customerName,
           address: formData.address,
           city: formData.city,
@@ -56,8 +55,6 @@ serve(async (req) => {
             ? formData.products.join(', ') 
             : formData.products,
           salesPrice: formData.salesPrice,
-          paymentOption: formData.paymentOption,
-          financeCompany: formData.financeCompany || '',
           interestRate: formData.interestRate || '',
           promotionalTerm: formData.promotionalTerm || '',
           amortization: formData.amortization || '',
