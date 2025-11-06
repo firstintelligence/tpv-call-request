@@ -20,6 +20,15 @@ serve(async (req) => {
     const formData = await req.json();
     console.log('Received TPV request:', formData);
 
+    // Validate agent ID
+    const VALID_AGENTS: Record<string, string> = {
+      'MM23': '+19059043544',
+    };
+
+    if (!VALID_AGENTS[formData.agentId]) {
+      throw new Error('Invalid agent ID');
+    }
+
     // Format phone number for VAPI (add +1 country code and remove formatting)
     const cleanPhone = formData.phoneNumber.replace(/\D/g, ''); // Remove all non-digits
     const formattedPhone = `+1${cleanPhone}`; // Add country code
@@ -35,6 +44,7 @@ serve(async (req) => {
       assistantOverrides: {
         variableValues: {
           // Map all form fields to variables the agent can use
+          agentId: formData.agentId,
           companyName: formData.companyName,
           customerName: formData.customerName,
           address: formData.address,
@@ -54,6 +64,10 @@ serve(async (req) => {
           amortization: formData.amortization || '',
           monthlyPayment: formData.monthlyPayment || '',
         },
+      },
+      metadata: {
+        agentId: formData.agentId,
+        customerName: formData.customerName,
       },
     };
 

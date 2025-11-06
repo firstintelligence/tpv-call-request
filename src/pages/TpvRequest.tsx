@@ -26,6 +26,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
+  agentId: z.string().min(1, "Agent ID is required"),
   companyName: z.string().min(1, "Company name is required"),
   customerName: z.string().min(1, "Customer name is required"),
   address: z.string().min(1, "Address is required"),
@@ -53,6 +54,7 @@ const TpvRequest = () => {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      agentId: "",
       companyName: "",
       customerName: "",
       address: "",
@@ -238,6 +240,20 @@ const TpvRequest = () => {
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name="agentId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Agent ID</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder="Enter your agent ID" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <div className="grid gap-4 md:grid-cols-2">
                   <FormField
                     control={form.control}
