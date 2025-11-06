@@ -5,6 +5,7 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Form,
   FormControl,
@@ -120,12 +121,45 @@ const TpvRequest = () => {
     }
   }, [salesPrice, financeCompany, interestRate, amortization, showFinanceFields, form]);
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = async (data: FormValues) => {
     console.log("TPV Request Data:", data);
-    toast({
-      title: "TPV Request Submitted",
-      description: "The verification call will be initiated shortly.",
-    });
+    
+    try {
+      toast({
+        title: "Initiating Call",
+        description: "Starting TPV verification call...",
+      });
+
+      // Call the edge function to initiate VAPI call
+      const { data: callResult, error } = await supabase.functions.invoke('initiate-tpv-call', {
+        body: {
+          ...data,
+          assistantId: 'YOUR_VAPI_ASSISTANT_ID', // Replace with your actual VAPI assistant ID
+          phoneNumberId: null, // Optional: add your VAPI phone number ID
+        },
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (callResult?.success) {
+        toast({
+          title: "Call Initiated Successfully",
+          description: `TPV verification call has been started. Call ID: ${callResult.callId}`,
+        });
+        form.reset();
+      } else {
+        throw new Error(callResult?.error || 'Failed to initiate call');
+      }
+    } catch (error) {
+      console.error('Error initiating TPV call:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : 'Failed to initiate verification call',
+        variant: "destructive",
+      });
+    }
   };
 
   const companies = [

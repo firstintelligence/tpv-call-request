@@ -1,1 +1,4 @@
 project_id = "qqygjwyvobfrbsogkzxf"
+
+[functions.initiate-tpv-call]
+verify_jwt = false
