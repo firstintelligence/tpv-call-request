@@ -1,5 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -23,6 +24,8 @@ serve(async (req) => {
     // Validate agent ID
     const VALID_AGENTS: Record<string, string> = {
       'MM23': '+19059043544',
+      'WK8448': '+16476258448',
+      'TB0195': '+14168750195',
     };
 
     if (!VALID_AGENTS[formData.agentId]) {
@@ -89,6 +92,66 @@ serve(async (req) => {
 
     const callData = await response.json();
     console.log('VAPI call initiated successfully:', callData);
+
+    // Log to database
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+    if (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
+      try {
+        const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+        
+        const { error: insertError } = await supabase
+          .from('tpv_requests')
+          .insert({
+            agent_id: formData.agentId,
+            customer_name: formData.customerName,
+            customer_phone: formData.phoneNumber,
+            customer_address: formData.address,
+            city: formData.city,
+            province: formData.province,
+            postal_code: formData.postalCode,
+            email: formData.email,
+            products: Array.isArray(formData.products) 
+              ? formData.products.join(', ') 
+              : formData.products,
+            sales_price: formData.salesPrice,
+            interest_rate: formData.interestRate,
+            promotional_term: formData.promotionalTerm,
+            amortization: formData.amortization,
+            monthly_payment: formData.monthlyPayment,
+            vapi_call_id: callData.id,
+            status: 'initiated',
+          });
+
+        if (insertError) {
+          console.error('Failed to log TPV request to database:', insertError);
+        } else {
+          console.log('TPV request logged to database successfully');
+          
+          // Trigger Google Sheets sync
+          try {
+            const syncResponse = await fetch(`${SUPABASE_URL}/functions/v1/sync-to-google-sheets`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+                'Content-Type': 'application/json',
+              },
+            });
+            
+            if (!syncResponse.ok) {
+              console.error('Failed to sync to Google Sheets:', await syncResponse.text());
+            } else {
+              console.log('Successfully synced to Google Sheets');
+            }
+          } catch (syncError) {
+            console.error('Error syncing to Google Sheets:', syncError);
+          }
+        }
+      } catch (dbError) {
+        console.error('Error logging to database:', dbError);
+      }
+    }
 
     return new Response(
       JSON.stringify({

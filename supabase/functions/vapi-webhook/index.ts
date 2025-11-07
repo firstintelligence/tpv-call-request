@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -8,6 +9,8 @@ const corsHeaders = {
 // Agent ID to phone number mapping
 const AGENT_MAPPING: Record<string, string> = {
   'MM23': '+19059043544',
+  'WK8448': '+16476258448',
+  'TB0195': '+14168750195',
 };
 
 serve(async (req) => {
@@ -34,14 +37,64 @@ serve(async (req) => {
       const customerName = webhookData.call?.metadata?.customerName || 'Unknown';
       const address = webhookData.call?.metadata?.address || 'Unknown';
       const callSuccessful = callStatus === 'assistant-ended-call' || callStatus === 'completed';
+      const vapiCallId = webhookData.call?.id;
+      const callDuration = webhookData.call?.duration || 0;
 
       console.log('Call ended:', {
         agentId,
         callStatus,
         customerName,
         address,
-        callSuccessful
+        callSuccessful,
+        vapiCallId,
+        callDuration
       });
+
+      // Update database with call results
+      const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+      const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+      if (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
+        try {
+          const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+          
+          const { error: updateError } = await supabase
+            .from('tpv_requests')
+            .update({
+              status: callSuccessful ? 'completed' : 'failed',
+              ended_reason: callStatus,
+              call_duration_seconds: Math.floor(callDuration),
+            })
+            .eq('vapi_call_id', vapiCallId);
+
+          if (updateError) {
+            console.error('Failed to update TPV request in database:', updateError);
+          } else {
+            console.log('TPV request updated in database successfully');
+            
+            // Trigger Google Sheets sync
+            try {
+              const syncResponse = await fetch(`${SUPABASE_URL}/functions/v1/sync-to-google-sheets`, {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+                  'Content-Type': 'application/json',
+                },
+              });
+              
+              if (!syncResponse.ok) {
+                console.error('Failed to sync to Google Sheets:', await syncResponse.text());
+              } else {
+                console.log('Successfully synced to Google Sheets');
+              }
+            } catch (syncError) {
+              console.error('Error syncing to Google Sheets:', syncError);
+            }
+          }
+        } catch (dbError) {
+          console.error('Error updating database:', dbError);
+        }
+      }
 
       if (agentId && AGENT_MAPPING[agentId]) {
         const agentPhone = AGENT_MAPPING[agentId];
