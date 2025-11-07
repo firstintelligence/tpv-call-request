@@ -65,7 +65,10 @@ async function getAccessToken(credentials: GoogleSheetsAuth): Promise<string> {
 }
 
 function pemToArrayBuffer(pem: string): ArrayBuffer {
-  const b64 = pem
+  // Replace literal \n with actual newlines if they exist
+  const normalizedPem = pem.replace(/\\n/g, '\n');
+  
+  const b64 = normalizedPem
     .replace(/-----BEGIN PRIVATE KEY-----/, '')
     .replace(/-----END PRIVATE KEY-----/, '')
     .replace(/\s/g, '');

@@ -30,15 +30,21 @@ serve(async (req) => {
     const webhookData = await req.json();
     console.log('VAPI webhook received:', JSON.stringify(webhookData, null, 2));
 
-    // Check if this is a call ended event
-    if (webhookData.type === 'end-of-call-report') {
-      const agentId = webhookData.call?.metadata?.agentId;
-      const callStatus = webhookData.endedReason || 'unknown';
-      const customerName = webhookData.call?.metadata?.customerName || 'Unknown';
-      const address = webhookData.call?.metadata?.address || 'Unknown';
+    // Check if this is a call ended event - handle both old and new VAPI webhook structures
+    const isEndOfCall = webhookData.type === 'end-of-call-report' || webhookData.message?.type === 'end-of-call-report';
+    
+    if (isEndOfCall) {
+      // Support both webhook structures
+      const callData = webhookData.call || webhookData.message?.call;
+      const metadata = callData?.metadata;
+      
+      const agentId = metadata?.agentId;
+      const callStatus = webhookData.endedReason || webhookData.message?.endedReason || callData?.endedReason || 'unknown';
+      const customerName = metadata?.customerName || 'Unknown';
+      const address = metadata?.address || 'Unknown';
       const callSuccessful = callStatus === 'assistant-ended-call' || callStatus === 'completed';
-      const vapiCallId = webhookData.call?.id;
-      const callDuration = webhookData.call?.duration || 0;
+      const vapiCallId = callData?.id;
+      const callDuration = callData?.duration || 0;
 
       console.log('Call ended:', {
         agentId,
