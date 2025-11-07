@@ -48,7 +48,9 @@ serve(async (req) => {
         variableValues: {
           // Map all form fields to variables the agent can use
           agentId: formData.agentId,
-          customerName: formData.customerName,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          customerName: formData.customerName, // Full name for formal references
           address: formData.address,
           city: formData.city,
           province: formData.province,
@@ -105,7 +107,9 @@ serve(async (req) => {
           .from('tpv_requests')
           .insert({
             agent_id: formData.agentId,
-            customer_name: formData.customerName,
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            customer_name: formData.customerName, // Full name
             customer_phone: formData.phoneNumber,
             customer_address: formData.address,
             city: formData.city,

@@ -27,7 +27,8 @@ import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   agentId: z.string().min(1, "Agent ID is required"),
-  customerName: z.string().min(1, "Customer name is required"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
   address: z.string().min(1, "Address is required"),
   city: z.string().min(1, "City is required"),
   province: z.string().min(1, "Province is required"),
@@ -51,7 +52,8 @@ const TpvRequest = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       agentId: "",
-      customerName: "",
+      firstName: "",
+      lastName: "",
       address: "",
       city: "",
       province: "",
@@ -107,10 +109,14 @@ const TpvRequest = () => {
         description: "Starting TPV verification call...",
       });
 
+      // Calculate full name from first and last name
+      const fullName = `${data.firstName} ${data.lastName}`;
+
       // Call the edge function to initiate VAPI call
       const { data: callResult, error } = await supabase.functions.invoke('initiate-tpv-call', {
         body: {
           ...data,
+          customerName: fullName,
           assistantId: '33a8b0b6-2fc0-4f1f-9f01-02712d52a676',
         },
       });
@@ -214,19 +220,35 @@ const TpvRequest = () => {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="customerName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Customer Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter customer name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="grid gap-4 md:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>First Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter first name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="lastName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Last Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter last name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
                 <FormField
                   control={form.control}
