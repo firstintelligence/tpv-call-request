@@ -22,12 +22,14 @@ export type Database = {
           city: string | null
           created_at: string | null
           customer_address: string
-          customer_name: string
+          customer_name: string | null
           customer_phone: string
           email: string | null
           ended_reason: string | null
+          first_name: string | null
           id: string
           interest_rate: string | null
+          last_name: string | null
           monthly_payment: string | null
           postal_code: string | null
           products: string | null
@@ -45,12 +47,14 @@ export type Database = {
           city?: string | null
           created_at?: string | null
           customer_address: string
-          customer_name: string
+          customer_name?: string | null
           customer_phone: string
           email?: string | null
           ended_reason?: string | null
+          first_name?: string | null
           id?: string
           interest_rate?: string | null
+          last_name?: string | null
           monthly_payment?: string | null
           postal_code?: string | null
           products?: string | null
@@ -68,12 +72,14 @@ export type Database = {
           city?: string | null
           created_at?: string | null
           customer_address?: string
-          customer_name?: string
+          customer_name?: string | null
           customer_phone?: string
           email?: string | null
           ended_reason?: string | null
+          first_name?: string | null
           id?: string
           interest_rate?: string | null
+          last_name?: string | null
           monthly_payment?: string | null
           postal_code?: string | null
           products?: string | null
