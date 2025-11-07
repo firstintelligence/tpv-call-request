@@ -45,7 +45,11 @@ serve(async (req) => {
       const callSuccessful = callStatus === 'assistant-ended-call' || callStatus === 'completed';
       const vapiCallId = callData?.id;
       const callDuration = callData?.duration || 0;
-      const recordingUrl = callData?.recordingUrl || webhookData.message?.recordingUrl || null;
+      // Extract recording URL from VAPI webhook (message.recordingUrl or message.artifact.recording)
+      const recordingUrl = webhookData.message?.recordingUrl || 
+                          webhookData.message?.artifact?.recording || 
+                          webhookData.recordingUrl || 
+                          null;
 
       console.log('Call ended:', {
         agentId,
