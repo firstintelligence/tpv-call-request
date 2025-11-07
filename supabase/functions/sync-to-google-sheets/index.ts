@@ -66,8 +66,18 @@ async function getAccessToken(credentials: GoogleSheetsAuth): Promise<string> {
 
 function pemToArrayBuffer(pem: string): ArrayBuffer {
   try {
+    // Log the first 100 chars to debug (without exposing the full key)
+    console.log('Private key preview (first 100 chars):', pem.substring(0, 100));
+    console.log('Private key length:', pem.length);
+    
     // Handle both literal \n and actual newlines
-    let normalizedPem = pem.replace(/\\n/g, '\n');
+    let normalizedPem = pem;
+    
+    // If the key has literal \n strings, replace them with actual newlines
+    if (pem.includes('\\n')) {
+      normalizedPem = pem.replace(/\\n/g, '\n');
+      console.log('Replaced literal \\n with newlines');
+    }
     
     // Remove PEM headers/footers and all whitespace
     const b64 = normalizedPem
@@ -75,10 +85,13 @@ function pemToArrayBuffer(pem: string): ArrayBuffer {
       .replace(/-----END PRIVATE KEY-----/g, '')
       .replace(/\s+/g, '')
       .replace(/\n/g, '')
+      .replace(/\r/g, '')
       .trim();
     
-    if (!b64) {
-      throw new Error('Private key is empty after processing');
+    console.log('Base64 string length after cleanup:', b64.length);
+    
+    if (!b64 || b64.length < 100) {
+      throw new Error(`Private key is too short after processing (${b64.length} chars). Original key length: ${pem.length}`);
     }
     
     const binary = atob(b64);
@@ -86,6 +99,8 @@ function pemToArrayBuffer(pem: string): ArrayBuffer {
     for (let i = 0; i < binary.length; i++) {
       bytes[i] = binary.charCodeAt(i);
     }
+    
+    console.log('Successfully converted private key to ArrayBuffer');
     return bytes.buffer;
   } catch (error) {
     console.error('Failed to process private key:', error);
