@@ -35,6 +35,7 @@ export type Database = {
           products: string | null
           promotional_term: string | null
           province: string | null
+          recording_url: string | null
           sales_price: string | null
           status: string
           updated_at: string | null
@@ -60,6 +61,7 @@ export type Database = {
           products?: string | null
           promotional_term?: string | null
           province?: string | null
+          recording_url?: string | null
           sales_price?: string | null
           status?: string
           updated_at?: string | null
@@ -85,6 +87,7 @@ export type Database = {
           products?: string | null
           promotional_term?: string | null
           province?: string | null
+          recording_url?: string | null
           sales_price?: string | null
           status?: string
           updated_at?: string | null

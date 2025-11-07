@@ -153,7 +153,8 @@ serve(async (req) => {
       'Status',
       'Call Duration (seconds)',
       'Ended Reason',
-      'VAPI Call ID'
+      'VAPI Call ID',
+      'Recording URL'
     ];
 
     const rows = tpvRequests?.map(request => [
@@ -175,7 +176,8 @@ serve(async (req) => {
       request.status,
       request.call_duration_seconds?.toString() || '',
       request.ended_reason || '',
-      request.vapi_call_id || ''
+      request.vapi_call_id || '',
+      request.recording_url || ''
     ]) || [];
 
     // Clear existing data and write new data

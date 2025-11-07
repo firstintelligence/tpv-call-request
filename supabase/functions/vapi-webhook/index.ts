@@ -45,6 +45,7 @@ serve(async (req) => {
       const callSuccessful = callStatus === 'assistant-ended-call' || callStatus === 'completed';
       const vapiCallId = callData?.id;
       const callDuration = callData?.duration || 0;
+      const recordingUrl = callData?.recordingUrl || webhookData.message?.recordingUrl || null;
 
       console.log('Call ended:', {
         agentId,
@@ -53,7 +54,8 @@ serve(async (req) => {
         address,
         callSuccessful,
         vapiCallId,
-        callDuration
+        callDuration,
+        recordingUrl
       });
 
       // Update database with call results
@@ -70,6 +72,7 @@ serve(async (req) => {
               status: callSuccessful ? 'completed' : 'failed',
               ended_reason: callStatus,
               call_duration_seconds: Math.floor(callDuration),
+              recording_url: recordingUrl,
             })
             .eq('vapi_call_id', vapiCallId);
 
