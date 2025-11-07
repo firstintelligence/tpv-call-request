@@ -57,9 +57,16 @@ serve(async (req) => {
           postalCode: formData.postalCode,
           phoneNumber: formData.phoneNumber,
           email: formData.email || '',
+          // Send products as both array and formatted string for agent flexibility
           products: Array.isArray(formData.products) 
             ? formData.products.join(', ') 
             : formData.products,
+          productsList: Array.isArray(formData.products) 
+            ? formData.products 
+            : [formData.products],
+          numberOfProducts: Array.isArray(formData.products) 
+            ? formData.products.length 
+            : 1,
           salesPrice: formData.salesPrice,
           interestRate: formData.interestRate || '',
           promotionalTerm: formData.promotionalTerm || '',
