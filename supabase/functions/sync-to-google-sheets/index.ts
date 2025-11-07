@@ -65,19 +65,33 @@ async function getAccessToken(credentials: GoogleSheetsAuth): Promise<string> {
 }
 
 function pemToArrayBuffer(pem: string): ArrayBuffer {
-  // Replace literal \n with actual newlines if they exist
-  const normalizedPem = pem.replace(/\\n/g, '\n');
-  
-  const b64 = normalizedPem
-    .replace(/-----BEGIN PRIVATE KEY-----/, '')
-    .replace(/-----END PRIVATE KEY-----/, '')
-    .replace(/\s/g, '');
-  const binary = atob(b64);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) {
-    bytes[i] = binary.charCodeAt(i);
+  try {
+    // Handle both literal \n and actual newlines
+    let normalizedPem = pem.replace(/\\n/g, '\n');
+    
+    // Remove PEM headers/footers and all whitespace
+    const b64 = normalizedPem
+      .replace(/-----BEGIN PRIVATE KEY-----/g, '')
+      .replace(/-----END PRIVATE KEY-----/g, '')
+      .replace(/\s+/g, '')
+      .replace(/\n/g, '')
+      .trim();
+    
+    if (!b64) {
+      throw new Error('Private key is empty after processing');
+    }
+    
+    const binary = atob(b64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes.buffer;
+  } catch (error) {
+    console.error('Failed to process private key:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    throw new Error(`Invalid private key format: ${errorMessage}`);
   }
-  return bytes.buffer;
 }
 
 serve(async (req) => {
