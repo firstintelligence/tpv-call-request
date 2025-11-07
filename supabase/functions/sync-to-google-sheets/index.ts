@@ -19,10 +19,27 @@ interface GoogleSheetsAuth {
   client_x509_cert_url: string;
 }
 
+// Helper function for URL-safe base64 encoding
+function base64urlEncode(str: string): string {
+  return btoa(str)
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+}
+
+function arrayBufferToBase64Url(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return base64urlEncode(binary);
+}
+
 async function getAccessToken(credentials: GoogleSheetsAuth): Promise<string> {
-  const jwtHeader = btoa(JSON.stringify({ alg: 'RS256', typ: 'JWT' }));
+  const jwtHeader = base64urlEncode(JSON.stringify({ alg: 'RS256', typ: 'JWT' }));
   const now = Math.floor(Date.now() / 1000);
-  const jwtClaimSet = btoa(JSON.stringify({
+  const jwtClaimSet = base64urlEncode(JSON.stringify({
     iss: credentials.client_email,
     scope: 'https://www.googleapis.com/auth/spreadsheets',
     aud: 'https://oauth2.googleapis.com/token',
@@ -51,7 +68,10 @@ async function getAccessToken(credentials: GoogleSheetsAuth): Promise<string> {
     new TextEncoder().encode(signatureInput)
   );
 
-  const jwt = `${signatureInput}.${btoa(String.fromCharCode(...new Uint8Array(signature)))}`;
+  const signatureBase64 = arrayBufferToBase64Url(signature);
+  const jwt = `${signatureInput}.${signatureBase64}`;
+
+  console.log('JWT generated, exchanging for access token...');
 
   // Exchange JWT for access token
   const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
@@ -60,7 +80,14 @@ async function getAccessToken(credentials: GoogleSheetsAuth): Promise<string> {
     body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`,
   });
 
+  if (!tokenResponse.ok) {
+    const errorText = await tokenResponse.text();
+    console.error('Token exchange failed:', errorText);
+    throw new Error(`Failed to get access token: ${errorText}`);
+  }
+
   const tokenData = await tokenResponse.json();
+  console.log('Successfully obtained access token');
   return tokenData.access_token;
 }
 
