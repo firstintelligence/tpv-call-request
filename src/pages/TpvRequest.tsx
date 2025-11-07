@@ -206,20 +206,6 @@ const TpvRequest = () => {
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="agentId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Agent ID</FormLabel>
-                      <FormControl>
-                        <Input type="password" placeholder="Enter your agent ID" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
                 <div className="grid gap-4 md:grid-cols-2">
                   <FormField
                     control={form.control}
@@ -541,6 +527,20 @@ const TpvRequest = () => {
                       />
                     </div>
                   </div>
+
+                <FormField
+                  control={form.control}
+                  name="agentId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Agent ID</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder="Enter your agent ID" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <Button type="submit" className="w-full" size="lg">
                   Submit TPV Request
