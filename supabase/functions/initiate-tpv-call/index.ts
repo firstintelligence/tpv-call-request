@@ -39,7 +39,7 @@ serve(async (req) => {
 
     // Prepare the VAPI call request with all form fields as dynamic variables
     const vapiCallRequest: any = {
-      phoneNumberId: '0c8cdec4-c0fe-46e8-b89a-7741d0c49a00', // VAPI phone number to call from
+      phoneNumberId: 'f87b72fe-4a8a-401e-8445-6f5e159cfcc1', // VAPI phone number to call from
       customer: {
         number: formattedPhone, // Customer's phone number with country code
       },
